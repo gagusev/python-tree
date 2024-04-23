@@ -1,4 +1,5 @@
 from os import listdir, path, readlink
+from argparse import ArgumentParser
 
 PFX_W=2
 SYM_L='└'
@@ -66,7 +67,23 @@ def print_tree(start, parent, tree, prefix=''):
     print(prefix + SYM_L + SYM_H * PFX_W, end='')
     print_tree(start, child, tree, prefix + ' ' * (PFX_W + 1) + ' ')
 
-start = Entry('.', 'dir', './', None)
-directory_dict = generate_tree(start, 3)
-print('.')
-print_tree(start, start, directory_dict)
+def main():
+    parser = ArgumentParser(description="displays the directory structure as a tree with a specified depth")
+
+    parser.add_argument('-L', '--depth',
+                        type=int,
+                        default=100,
+                        help='Depth (nesting level) to display')
+    
+    parser.add_argument('dir',
+                        type=str,
+                        help="Path to the directory")
+
+    args = parser.parse_args()
+
+    init_entry = Entry(args.dir, 'dir', path.abspath(args.dir), None)
+    print(f'{BOLD}{OKBLUE}{init_entry.name}{ENDC}')
+    print_tree(init_entry, init_entry, generate_tree(init_entry, args.depth))
+
+if __name__ == '__main__':
+    main()
