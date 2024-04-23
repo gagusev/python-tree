@@ -68,22 +68,22 @@ def print_tree(start, parent, tree, prefix=''):
     print_tree(start, child, tree, prefix + ' ' * (PFX_W + 1) + ' ')
 
 def main():
-    parser = ArgumentParser(description="displays the directory structure as a tree with a specified depth")
+    parser = ArgumentParser(description='list contents of directories in a tree-like format')
 
-    parser.add_argument('-L', '--depth',
+    parser.add_argument('-L', '--level',
                         type=int,
                         default=100,
-                        help='Depth (nesting level) to display')
+                        help='descend only level directories deep')
     
-    parser.add_argument('dir',
+    parser.add_argument('directory',
                         type=str,
-                        help="Path to the directory")
+                        help="path to the directory")
 
     args = parser.parse_args()
 
-    init_entry = Entry(args.dir, 'dir', path.abspath(args.dir), None)
+    init_entry = Entry(args.directory, 'dir', path.abspath(args.directory), None)
     print(f'{BOLD}{OKBLUE}{init_entry.name}{ENDC}')
-    print_tree(init_entry, init_entry, generate_tree(init_entry, args.depth))
+    print_tree(init_entry, init_entry, generate_tree(init_entry, args.level))
 
 if __name__ == '__main__':
     main()
