@@ -5,6 +5,10 @@ SYM_L='└'
 SYM_T='├'
 SYM_V='─'
 SYM_H='─'
+OKBLUE = '\033[94m'
+OKCYAN = '\033[96m'
+OKGREEN = '\033[92m'
+ENDC = '\033[0m'
 
 class Entry:
     def __init__(self, _name, _type, _path):
@@ -20,24 +24,29 @@ class Entry:
     
     def __hash__(self):
         return hash(self.path)
-    
-#def create_tree(start, depth, tree):
 
-def directory_tree(root_dir, start_entry):
+def generate_tree(start_entry):
     entries = {start_entry: []}
-    for entry in listdir(root_dir):
-        full_path = path.join(root_dir, entry)
-        entry_type = "dir" if path.isdir(full_path) else "file"
+    for entry in listdir(start_entry.path):
+        full_path = path.join(start_entry.path, entry)
+        if path.isdir(full_path):
+            entry_type = 'dir'
+        elif path.islink(full_path):
+            entry_type = 'link'
+        else:
+            entry_type = 'file'
         entry_obj = Entry(entry, entry_type, full_path)
         entries[start_entry].append(entry_obj)
         if entry_type == "dir":
-            entries.update(directory_tree(full_path, entry_obj))
+            entries.update(generate_tree(entry_obj))
     return entries
 
 def print_tree(start, parent, tree, prefix=''):
     if parent != start:
-        if parent.type == 'file':
-            print(f' {parent}'.upper())
+        if parent.type == 'dir':
+            print(f' {OKBLUE}{parent}{ENDC}')
+        elif parent.type == 'link':
+            print(f' {OKCYAN}{parent}{ENDC}')
         else:
             print(f' {parent}')
     if parent not in tree:
@@ -63,7 +72,7 @@ def print_tree(start, parent, tree, prefix=''):
 #print(Entry('/', 'dir', '/'))
 #print_tree(Entry('/', 'dir', '/'), Entry('/', 'dir', '/'), dct)
 
-start = Entry('braim-task2', 'dir', '/home/grigus/braim-task2/')
-directory_dict = directory_tree('../braim-task2', start)
+start = Entry('python_tree', 'dir', '/home/grigus/python_tree/')
+directory_dict = generate_tree(start)
 print('../braim-task2')
 print_tree(start, start, directory_dict)
